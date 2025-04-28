@@ -126,9 +126,11 @@ VALUES
   ('2021-01-08 00:49:22.000000', '31.61');
   */
       
-with a as (select DATE(transaction_time) as tran_date, transaction_amount from Transactions order by tran_date )
-select *,
-  avg(transaction_amount) OVER(ORDER BY tran_date
+  with a as (select DATE(transaction_time) as tran_date, transaction_amount from Transactions order by tran_date ),
+	b as (select *,
+  AVG(transaction_amount) OVER(ORDER BY tran_date
      ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)
      as rolling_average
-     from a;
+           from a)
+select tran_date, ROUND(rolling_average, 2) as rolling_average from b where tran_date = "2021-01-31"
+;
